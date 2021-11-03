@@ -37,8 +37,8 @@ void GameLayer::init() {
 	enemies.clear(); // Vaciar por si reiniciamos el juego
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
 
-	loadMap("res/" + to_string(game->currentLevel) + ".txt");
-	//loadMap("res/4.txt");
+	//loadMap("res/" + to_string(game->currentLevel) + ".txt");
+	loadMap("res/5.txt");
 }
 
 void GameLayer::loadMap(string name) {
@@ -100,6 +100,14 @@ void GameLayer::loadMapObject(char character, float x, float y)
 		tile->y = tile->y - tile->height / 2;
 		tiles.push_back(tile);
 		space->addStaticActor(tile);
+		break;
+	}
+	case 'U': {
+		Tile* destructible = new Tile("res/bloque_metal.png", x, y, game);
+		// modificación para empezar a contar desde el suelo.
+		destructible->y = destructible->y - destructible->height / 2;
+		tilesDestructibles.push_back(destructible);
+		space->addStaticActor(destructible); // Realmente no hace falta
 		break;
 	}
 	}
@@ -234,6 +242,7 @@ void GameLayer::update() {
 
 	list<Enemy*> deleteEnemies;
 	list<Projectile*> deleteProjectiles;
+	list<Tile*> deleteDestructibles;
 	for (auto const& projectile : projectiles) {
 		if (projectile->isInRender(scrollX) == false || projectile->vx == 0) {
 
@@ -246,8 +255,6 @@ void GameLayer::update() {
 			}
 		}
 	}
-
-
 
 	for (auto const& enemy : enemies) {
 		for (auto const& projectile : projectiles) {
@@ -270,6 +277,27 @@ void GameLayer::update() {
 		}
 	}
 
+	for (auto const& tile : tilesDestructibles) {
+		for (auto const& projectile : projectiles) {
+			if (tile->isOverlap(projectile)) {
+				bool pInList = std::find(deleteProjectiles.begin(),
+					deleteProjectiles.end(),
+					projectile) != deleteProjectiles.end();
+
+				if (!pInList) {
+					deleteProjectiles.push_back(projectile);
+				}
+				bool tInList = std::find(deleteDestructibles.begin(),
+					deleteDestructibles.end(),
+					tile) != deleteDestructibles.end();
+
+				if (!tInList) {
+					deleteDestructibles.push_back(tile);
+				}
+			}
+		}
+	}
+
 	for (auto const& enemy : enemies) {
 		if (enemy->state == game->stateDead) {
 			bool eInList = std::find(deleteEnemies.begin(),
@@ -287,6 +315,12 @@ void GameLayer::update() {
 		space->removeDynamicActor(delEnemy);
 	}
 	deleteEnemies.clear();
+
+	for (auto const& delTile : deleteDestructibles) {
+		tilesDestructibles.remove(delTile);
+		space->removeStaticActor(delTile);
+	}
+	deleteDestructibles.clear();
 
 	for (auto const& delProjectile : deleteProjectiles) {
 		projectiles.remove(delProjectile);
@@ -332,7 +366,9 @@ void GameLayer::draw() {
 	for (auto const& enemy : enemies) {
 		enemy->draw(scrollX);
 	}
-
+	for (auto const& des : tilesDestructibles) {
+		des->draw(scrollX);
+	}
 
 	backgroundPoints->draw();
 	textPoints->draw();
