@@ -5,6 +5,7 @@
 #include "Background.h"
 
 #include "Enemy.h"
+#include "Enemy2.h"
 #include "Projectile.h"
 #include "Text.h"
 #include "Tile.h"
@@ -53,6 +54,7 @@ public:
 	Background* background;
 	Actor* backgroundPoints;
 	list<Enemy*> enemies;
+	list<Enemy2*> enemies2;
 	list<Projectile*> projectiles;
 
 	bool controlContinue = false;

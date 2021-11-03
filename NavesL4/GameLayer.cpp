@@ -36,9 +36,10 @@ void GameLayer::init() {
 
 	enemies.clear(); // Vaciar por si reiniciamos el juego
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
+	enemies2.clear();
 
-	loadMap("res/" + to_string(game->currentLevel) + ".txt");
-	//loadMap("res/4.txt");
+	//loadMap("res/" + to_string(game->currentLevel) + ".txt");
+	loadMap("res/4.txt");
 }
 
 void GameLayer::loadMap(string name) {
@@ -100,6 +101,14 @@ void GameLayer::loadMapObject(char character, float x, float y)
 		tile->y = tile->y - tile->height / 2;
 		tiles.push_back(tile);
 		space->addStaticActor(tile);
+		break;
+	}
+	case '2': {
+		Enemy2* enemy = new Enemy2(x, y, game);
+		// modificación para empezar a contar desde el suelo.
+		enemy->y = enemy->y - enemy->height / 2;
+		enemies2.push_back(enemy);
+		space->addDynamicActor(enemy);
 		break;
 	}
 	}
@@ -182,9 +191,6 @@ void GameLayer::processControls() {
 	else {
 
 	}
-
-
-
 }
 
 void GameLayer::update() {
@@ -218,6 +224,9 @@ void GameLayer::update() {
 	for (auto const& projectile : projectiles) {
 		projectile->update();
 	}
+	for (auto const& enemy2 : enemies2) {
+		enemy2->update();
+	}
 
 	// Colisiones
 	for (auto const& enemy : enemies) {
@@ -227,6 +236,33 @@ void GameLayer::update() {
 				init();
 				return;
 			}
+		}
+	}
+
+	list<Enemy2*> deleteEnemies2;
+	for (auto const& enemy2 : enemies2) {
+		if (enemy2->isOverlap(player) 
+			&& (player->y + (player->height/2)) > enemy2->y
+			&& (player->y + (player->height / 2)) != (enemy2->y + (enemy2->height / 2))
+			&& (player->y + (player->height / 2)) >= (enemy2->y - (enemy2->height / 2))){
+			enemy2->impacted();
+			points++;
+			textPoints->content = to_string(points);
+			bool eInList = std::find(deleteEnemies2.begin(),
+				deleteEnemies2.end(),
+				enemy2) != deleteEnemies2.end();
+
+			if (!eInList) {
+				deleteEnemies2.push_back(enemy2);
+			}
+		}
+		else if (enemy2->isOverlap(player)
+			&& (player->y + (player->height / 2)) == (enemy2->y + (enemy2->height / 2))) {
+				player->loseLife();
+				if (player->lifes <= 0) {
+					init();
+					return;
+				}
 		}
 	}
 
@@ -288,6 +324,12 @@ void GameLayer::update() {
 	}
 	deleteEnemies.clear();
 
+	for (auto const& delEnemy2 : deleteEnemies2) {
+		enemies2.remove(delEnemy2);
+		space->removeDynamicActor(delEnemy2);
+	}
+	deleteEnemies2.clear();
+
 	for (auto const& delProjectile : deleteProjectiles) {
 		projectiles.remove(delProjectile);
 		space->removeDynamicActor(delProjectile);
@@ -332,7 +374,9 @@ void GameLayer::draw() {
 	for (auto const& enemy : enemies) {
 		enemy->draw(scrollX);
 	}
-
+	for (auto const& enemy2 : enemies2) {
+		enemy2->draw(scrollX);
+	}
 
 	backgroundPoints->draw();
 	textPoints->draw();
