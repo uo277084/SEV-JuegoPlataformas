@@ -16,6 +16,7 @@
 #include <fstream> // Leer ficheros
 #include <sstream> // Leer líneas / String
 #include <list>
+#include "Item.h"
 
 class GameLayer : public Layer
 {
@@ -48,11 +49,15 @@ public:
 	Audio* audioBackground;
 	Text* textPoints;
 	int points;
+	Text* textItems;
+	int numItems;
 	int newEnemyTime = 0;
 	Player* player;
 	Background* background;
 	Actor* backgroundPoints;
+	Actor* backgroundItems;
 	list<Enemy*> enemies;
+	list<Item*> items;
 	list<Projectile*> projectiles;
 
 	bool controlContinue = false;

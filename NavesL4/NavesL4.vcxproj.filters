@@ -76,7 +76,7 @@
       <Filter>Archivos de origen\actores</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
-      <Filter>Archivos de origen</Filter>
+      <Filter>Archivos de origen\actores</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,7 +126,7 @@
       <Filter>Archivos de encabezado\actores</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>Archivos de encabezado\actores</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
