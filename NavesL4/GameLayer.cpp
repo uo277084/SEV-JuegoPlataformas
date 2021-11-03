@@ -7,6 +7,7 @@ GameLayer::GameLayer(Game* game)
 	message = new Actor("res/mensaje_como_jugar.png", WIDTH * 0.5, HEIGHT * 0.5,
 		WIDTH, HEIGHT, game);
 
+	banderaSalvado = false;
 	gamePad = SDL_GameControllerOpen(0);
 	init();
 }
@@ -37,8 +38,8 @@ void GameLayer::init() {
 	enemies.clear(); // Vaciar por si reiniciamos el juego
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
 
-	loadMap("res/" + to_string(game->currentLevel) + ".txt");
-	//loadMap("res/4.txt");
+	//loadMap("res/" + to_string(game->currentLevel) + ".txt");
+	loadMap("res/5.txt");
 }
 
 void GameLayer::loadMap(string name) {
@@ -79,6 +80,13 @@ void GameLayer::loadMapObject(char character, float x, float y)
 		space->addDynamicActor(cup); // Realmente no hace falta
 		break;
 	}
+	case 'A': {
+		salvado = new Tile("res/icono_recolectable.png", x, y, game);
+		// modificación para empezar a contar desde el suelo.
+		salvado->y = salvado->y - salvado->height / 2;
+		space->addDynamicActor(salvado); // Realmente no hace falta
+		break;
+	}
 	case 'E': {
 		Enemy* enemy = new Enemy(x, y, game);
 		// modificación para empezar a contar desde el suelo.
@@ -88,7 +96,12 @@ void GameLayer::loadMapObject(char character, float x, float y)
 		break;
 	}
 	case '1': {
-		player = new Player(x, y, game);
+		if (!banderaSalvado) {
+			player = new Player(x, y, game);
+		}
+		else {
+			player = new Player(xSalvado, ySalvado, game);
+		}
 		// modificación para empezar a contar desde el suelo.
 		player->y = player->y - player->height / 2;
 		space->addDynamicActor(player);
@@ -202,6 +215,13 @@ void GameLayer::update() {
 			WIDTH, HEIGHT, game);
 		pause = true;
 		init();
+	}
+
+	//Salvado
+	if (salvado->isOverlap(player)) {
+		xSalvado = player->x;
+		ySalvado = player->y;
+		banderaSalvado = true;
 	}
 
 	// Jugador se cae
@@ -328,6 +348,7 @@ void GameLayer::draw() {
 		projectile->draw(scrollX);
 	}
 	cup->draw(scrollX);
+	salvado->draw(scrollX);
 	player->draw(scrollX);
 	for (auto const& enemy : enemies) {
 		enemy->draw(scrollX);

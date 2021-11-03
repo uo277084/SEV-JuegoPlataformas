@@ -39,6 +39,7 @@ public:
 	Actor* buttonJump;
 	Actor* buttonShoot;
 
+	Tile* salvado;
 	Tile* cup; // Elemento de final de nivel
 	Space* space;
 	float scrollX;
@@ -60,6 +61,8 @@ public:
 	int controlMoveY = 0;
 	int controlMoveX = 0;
 
-
+	int xSalvado;
+	int ySalvado;
+	bool banderaSalvado;
 };
 
