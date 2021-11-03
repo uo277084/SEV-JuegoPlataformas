@@ -37,8 +37,8 @@ void GameLayer::init() {
 	enemies.clear(); // Vaciar por si reiniciamos el juego
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
 
-	//loadMap("res/" + to_string(game->currentLevel) + ".txt");
-	loadMap("res/4.txt");
+	loadMap("res/" + to_string(game->currentLevel) + ".txt");
+	//loadMap("res/4.txt");
 }
 
 void GameLayer::loadMap(string name) {
