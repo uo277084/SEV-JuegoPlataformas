@@ -44,6 +44,7 @@ public:
 	float scrollX;
 	int mapWidth;
 	list<Tile*> tiles;
+	list<Tile*> tilesDestructibles;
 
 	Audio* audioBackground;
 	Text* textPoints;
