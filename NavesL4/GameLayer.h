@@ -42,6 +42,7 @@ public:
 	Tile* cup; // Elemento de final de nivel
 	Space* space;
 	float scrollX;
+	float scrollY;
 	int mapWidth;
 	list<Tile*> tiles;
 

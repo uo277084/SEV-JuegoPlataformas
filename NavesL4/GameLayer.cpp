@@ -20,6 +20,7 @@ void GameLayer::init() {
 
 	space = new Space(1);
 	scrollX = 0;
+	scrollY = 0;
 	tiles.clear();
 
 	audioBackground = new Audio("res/musica_ambiente.mp3", true);
@@ -235,7 +236,7 @@ void GameLayer::update() {
 	list<Enemy*> deleteEnemies;
 	list<Projectile*> deleteProjectiles;
 	for (auto const& projectile : projectiles) {
-		if (projectile->isInRender(scrollX) == false || projectile->vx == 0) {
+		if (projectile->isInRender(scrollX, scrollY) == false || projectile->vx == 0) {
 
 			bool pInList = std::find(deleteProjectiles.begin(),
 				deleteProjectiles.end(),
@@ -313,6 +314,17 @@ void GameLayer::calculateScroll() {
 			scrollX = player->x - WIDTH * 0.7;
 		}
 	}
+	if (player->y > HEIGHT * 0.5) {
+		if (player->y - scrollY < HEIGHT * 0.5) {
+			scrollY = player->y - HEIGHT * 0.5;
+		}
+	}
+
+	if (player->y < mapWidth - HEIGHT * 0.5) {
+		if (player->y - scrollY > HEIGHT * 0.5) {
+			scrollY = player->y - HEIGHT * 0.5;
+		}
+	}
 }
 
 
@@ -321,16 +333,16 @@ void GameLayer::draw() {
 
 	background->draw();
 	for (auto const& tile : tiles) {
-		tile->draw(scrollX);
+		tile->draw(scrollX, scrollY);
 	}
 
 	for (auto const& projectile : projectiles) {
-		projectile->draw(scrollX);
+		projectile->draw(scrollX, scrollY);
 	}
-	cup->draw(scrollX);
-	player->draw(scrollX);
+	cup->draw(scrollX, scrollY);
+	player->draw(scrollX, scrollY);
 	for (auto const& enemy : enemies) {
-		enemy->draw(scrollX);
+		enemy->draw(scrollX, scrollY);
 	}
 
 
